@@ -1,0 +1,97 @@
+// # oobanner Rendering and ANSI Theme Formatter
+//
+// Logline: Formats banner typography with ANSI colors, terminal styling, and structured JSON.
+//
+// Setup: Pure string formatter supporting oote palettes, color gradients, and JSON envelopes.
+//
+// Beats:
+//   1. Provide ANSI styling helpers for banner colorization.
+//   2. Render composite banner lines into formatted terminal output.
+//   3. Serialize rendered banner metadata and lines into JSON format.
+
+import "core/banner_box.oo";
+
+pub fn ansi_reset() -> String { return "\x1b[0m"; }
+pub fn ansi_bold() -> String { return "\x1b[1m"; }
+pub fn ansi_dim() -> String { return "\x1b[2m"; }
+pub fn ansi_cyan() -> String { return "\x1b[36m"; }
+pub fn ansi_green() -> String { return "\x1b[32m"; }
+pub fn ansi_yellow() -> String { return "\x1b[33m"; }
+pub fn ansi_magenta() -> String { return "\x1b[35m"; }
+pub fn ansi_red() -> String { return "\x1b[31m"; }
+pub fn ansi_blue() -> String { return "\x1b[34m"; }
+
+pub fn color_code_for(color_name: String) -> String {
+    if color_name == "cyan" { return ansi_cyan(); }
+    if color_name == "green" { return ansi_green(); }
+    if color_name == "yellow" { return ansi_yellow(); }
+    if color_name == "magenta" { return ansi_magenta(); }
+    if color_name == "red" { return ansi_red(); }
+    if color_name == "blue" { return ansi_blue(); }
+    if color_name == "bold" { return ansi_bold(); }
+    return "";
+}
+
+fn json_escape(s: String) -> String {
+    let mut out: String = "";
+    let n: Int = chars_len(s);
+    let mut i: Int = 0;
+    while i < n {
+        let c: String = char_at(s, i);
+        if c == "\\" {
+            out = out + "\\\\";
+        } else if c == "\"" {
+            out = out + "\\\"";
+        } else if c == "\n" {
+            out = out + "\\n";
+        } else if c == "\r" {
+            out = out + "\\r";
+        } else if c == "\t" {
+            out = out + "\\t";
+        } else {
+            out = out + c;
+        }
+        i = i + 1;
+    }
+    return out;
+}
+
+pub fn render_banner_display(lines: List[String], color_name: String) -> String {
+    let c_code: String = color_code_for(color_name);
+    let use_color: Bool = chars_len(c_code) > 0;
+    let count: Int = list_len(lines);
+    let mut out: String = "";
+    let mut i: Int = 0;
+
+    while i < count {
+        let l: String = list_get(lines, i);
+        if use_color {
+            out = out + c_code + l + ansi_reset() + "\n";
+        } else {
+            out = out + l + "\n";
+        }
+        i = i + 1;
+    }
+    return out;
+}
+
+pub fn render_banner_json(text: String, font: String, border: String, lines: List[String]) -> String {
+    let count: Int = list_len(lines);
+    let width: Int = max_line_width(lines);
+    let mut lines_json: String = "[";
+    let mut i: Int = 0;
+
+    while i < count {
+        if i > 0 { lines_json = lines_json + ","; }
+        lines_json = lines_json + "\"" + json_escape(list_get(lines, i)) + "\"";
+        i = i + 1;
+    }
+    lines_json = lines_json + "]";
+
+    return "{\"text\":\"" + json_escape(text) + "\""
+        + ",\"font\":\"" + json_escape(font) + "\""
+        + ",\"border\":\"" + json_escape(border) + "\""
+        + ",\"height\":" + to_string(count)
+        + ",\"width\":" + to_string(width)
+        + ",\"lines\":" + lines_json + "}";
+}

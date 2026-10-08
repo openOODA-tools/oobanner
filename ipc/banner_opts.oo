@@ -1,0 +1,92 @@
+// # oobanner CLI Options Parser
+//
+// Logline: Ingests command line arguments into typed banner rendering options.
+//
+// Setup: Pure argument decoding for fonts, borders, alignment, and operational modes.
+//
+// Beats:
+//   1. Define BannerOpts data structure covering all rendering modes.
+//   2. Parse typography flags for font, border frame, color, and alignment.
+//   3. Extract positional arguments into the primary text buffer.
+
+pub type BannerOpts = struct {
+    action: String,
+    text: String,
+    font: String,
+    border: String,
+    alignment: String,
+    color: String,
+    json_mode: Bool
+};
+
+pub fn default_banner_opts() -> BannerOpts {
+    return BannerOpts {
+        action: "render",
+        text: "",
+        font: "standard",
+        border: "none",
+        alignment: "left",
+        color: "none",
+        json_mode: false
+    };
+}
+
+pub fn parse_banner_args(args: List[String]) -> BannerOpts {
+    let mut opts: BannerOpts = default_banner_opts();
+    let n: Int = list_len(args);
+    let mut i: Int = 0;
+    let mut words: List[String] = list_new();
+
+    while i < n {
+        let arg: String = list_get(args, i);
+        if arg == "-h" || arg == "--help" {
+            opts.action = "help";
+            return opts;
+        } else if arg == "-v" || arg == "--version" {
+            opts.action = "version";
+            return opts;
+        } else if arg == "--mcp" {
+            opts.action = "mcp";
+            return opts;
+        } else if arg == "--json" {
+            opts.json_mode = true;
+        } else if arg == "-f" || arg == "--font" {
+            if i + 1 < n {
+                i = i + 1;
+                opts.font = list_get(args, i);
+            }
+        } else if arg == "-b" || arg == "--border" {
+            if i + 1 < n {
+                i = i + 1;
+                opts.border = list_get(args, i);
+            }
+        } else if arg == "-a" || arg == "--align" {
+            if i + 1 < n {
+                i = i + 1;
+                opts.alignment = list_get(args, i);
+            }
+        } else if arg == "-c" || arg == "--color" {
+            if i + 1 < n {
+                i = i + 1;
+                opts.color = list_get(args, i);
+            }
+        } else if !str_starts_with(arg, "-") {
+            words = list_push(words, arg);
+        }
+        i = i + 1;
+    }
+
+    let w_count: Int = list_len(words);
+    if w_count > 0 {
+        let mut full_text: String = "";
+        let mut j: Int = 0;
+        while j < w_count {
+            if j > 0 { full_text = full_text + " "; }
+            full_text = full_text + list_get(words, j);
+            j = j + 1;
+        }
+        opts.text = full_text;
+    }
+
+    return opts;
+}

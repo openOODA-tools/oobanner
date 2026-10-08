@@ -1,0 +1,230 @@
+// # oobanner Standard 5-Line Font Letters
+//
+// Logline: Multi-line typography glyphs for uppercase letters A through Z.
+//
+// Setup: Pure string matrix definitions for horizontal character compositing.
+//
+// Beats:
+//   1. Convert lowercase characters to uppercase representations.
+//   2. Define 5-line string matrices for letters A through M.
+//   3. Define 5-line string matrices for letters N through Z.
+
+pub fn to_upper_char(c: String) -> String {
+    if c == "a" { return "A"; }
+    if c == "b" { return "B"; }
+    if c == "c" { return "C"; }
+    if c == "d" { return "D"; }
+    if c == "e" { return "E"; }
+    if c == "f" { return "F"; }
+    if c == "g" { return "G"; }
+    if c == "h" { return "H"; }
+    if c == "i" { return "I"; }
+    if c == "j" { return "J"; }
+    if c == "k" { return "K"; }
+    if c == "l" { return "L"; }
+    if c == "m" { return "M"; }
+    if c == "n" { return "N"; }
+    if c == "o" { return "O"; }
+    if c == "p" { return "P"; }
+    if c == "q" { return "Q"; }
+    if c == "r" { return "R"; }
+    if c == "s" { return "S"; }
+    if c == "t" { return "T"; }
+    if c == "u" { return "U"; }
+    if c == "v" { return "V"; }
+    if c == "w" { return "W"; }
+    if c == "x" { return "X"; }
+    if c == "y" { return "Y"; }
+    if c == "z" { return "Z"; }
+    return c;
+}
+
+pub fn glyph_row_letters_am(c: String, row: Int) -> String {
+    if c == "A" {
+        if row == 0 { return "  A  "; }
+        if row == 1 { return " / \\ "; }
+        if row == 2 { return "|/_\\|"; }
+        if row == 3 { return "| _ |"; }
+        return "|_| |_|";
+    }
+    if c == "B" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "| _ )"; }
+        if row == 2 { return "| _ \\"; }
+        if row == 3 { return "|___/"; }
+        return "|___/ ";
+    }
+    if c == "C" {
+        if row == 0 { return "  ___"; }
+        if row == 1 { return " / __|"; }
+        if row == 2 { return "| (__ "; }
+        if row == 3 { return " \\___|"; }
+        return "      ";
+    }
+    if c == "D" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "|   \\"; }
+        if row == 2 { return "| |) |"; }
+        if row == 3 { return "|___/"; }
+        return "     ";
+    }
+    if c == "E" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "| __|"; }
+        if row == 2 { return "| _| "; }
+        if row == 3 { return "|___|"; }
+        return "     ";
+    }
+    if c == "F" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "| __|"; }
+        if row == 2 { return "| _| "; }
+        if row == 3 { return "|_|  "; }
+        return "     ";
+    }
+    if c == "G" {
+        if row == 0 { return "  ___"; }
+        if row == 1 { return " / __|"; }
+        if row == 2 { return "| (_ |"; }
+        if row == 3 { return " \\___|"; }
+        return "      ";
+    }
+    if c == "H" {
+        if row == 0 { return " _  _"; }
+        if row == 1 { return "| || |"; }
+        if row == 2 { return "| __ |"; }
+        if row == 3 { return "|_||_|"; }
+        return "      ";
+    }
+    if c == "I" {
+        if row == 0 { return " ___"; }
+        if row == 1 { return "|_ _|"; }
+        if row == 2 { return " | | "; }
+        if row == 3 { return "|___|"; }
+        return "     ";
+    }
+    if c == "J" {
+        if row == 0 { return "   _ "; }
+        if row == 1 { return "  | |"; }
+        if row == 2 { return " _| |"; }
+        if row == 3 { return "|___/"; }
+        return "     ";
+    }
+    if c == "K" {
+        if row == 0 { return " _  _"; }
+        if row == 1 { return "| |/ /"; }
+        if row == 2 { return "| ' < "; }
+        if row == 3 { return "|_|\\_\\"; }
+        return "      ";
+    }
+    if c == "L" {
+        if row == 0 { return " _   "; }
+        if row == 1 { return "| |  "; }
+        if row == 2 { return "| |__"; }
+        if row == 3 { return "|____|"; }
+        return "      ";
+    }
+    if c == "M" {
+        if row == 0 { return " _  _ "; }
+        if row == 1 { return "| \\/ |"; }
+        if row == 2 { return "| |\\/|"; }
+        if row == 3 { return "|_|  |"; }
+        return "      ";
+    }
+    return "";
+}
+
+pub fn glyph_row_letters_nz(c: String, row: Int) -> String {
+    if c == "N" {
+        if row == 0 { return " _  _ "; }
+        if row == 1 { return "| \\| |"; }
+        if row == 2 { return "| .` |"; }
+        if row == 3 { return "|_|\\_|"; }
+        return "      ";
+    }
+    if c == "O" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "/ _ \\"; }
+        if row == 2 { return "| | |"; }
+        if row == 3 { return "\\___/"; }
+        return "     ";
+    }
+    if c == "P" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "| _ \\"; }
+        if row == 2 { return "|  _/"; }
+        if row == 3 { return "|_|  "; }
+        return "     ";
+    }
+    if c == "Q" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "/ _ \\"; }
+        if row == 2 { return "| \\) |"; }
+        if row == 3 { return "\\__X/"; }
+        return "     ";
+    }
+    if c == "R" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "| _ \\"; }
+        if row == 2 { return "|   /"; }
+        if row == 3 { return "|_|_\\"; }
+        return "     ";
+    }
+    if c == "S" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "/ __|"; }
+        if row == 2 { return "\\__ \\"; }
+        if row == 3 { return "|___/"; }
+        return "     ";
+    }
+    if c == "T" {
+        if row == 0 { return " _____ "; }
+        if row == 1 { return "|_   _|"; }
+        if row == 2 { return "  | |  "; }
+        if row == 3 { return "  |_|  "; }
+        return "       ";
+    }
+    if c == "U" {
+        if row == 0 { return " _  _ "; }
+        if row == 1 { return "| | | |"; }
+        if row == 2 { return "| |_| |"; }
+        if row == 3 { return " \\___/ "; }
+        return "       ";
+    }
+    if c == "V" {
+        if row == 0 { return "__   __"; }
+        if row == 1 { return "\\ \\ / /"; }
+        if row == 2 { return " \\ V / "; }
+        if row == 3 { return "  \\_/  "; }
+        return "       ";
+    }
+    if c == "W" {
+        if row == 0 { return "__      __"; }
+        if row == 1 { return "\\ \\ /\\ / /"; }
+        if row == 2 { return " \\ V  V / "; }
+        if row == 3 { return "  \\_/\\_/  "; }
+        return "          ";
+    }
+    if c == "X" {
+        if row == 0 { return "__  __"; }
+        if row == 1 { return "\\ \\/ /"; }
+        if row == 2 { return " >  < "; }
+        if row == 3 { return "/_/\\_\\"; }
+        return "      ";
+    }
+    if c == "Y" {
+        if row == 0 { return "__   __"; }
+        if row == 1 { return "\\ \\ / /"; }
+        if row == 2 { return " \\ V / "; }
+        if row == 3 { return "  |_|  "; }
+        return "       ";
+    }
+    if c == "Z" {
+        if row == 0 { return " ____"; }
+        if row == 1 { return "|_  /"; }
+        if row == 2 { return " / / "; }
+        if row == 3 { return "/___|"; }
+        return "     ";
+    }
+    return "";
+}

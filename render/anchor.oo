@@ -1,0 +1,16 @@
+// # oobanner Render Subsystem Anchor
+//
+// Logline: Consolidates terminal colorizers, banner layout visualizers, and JSON serializers.
+//
+// Setup: Root barrel shim for banner styling and formatting domain.
+//
+// Beats:
+//   1. Re-export ANSI color styles and text formatting primitives.
+//   2. Re-export multi-line banner visualizer for terminals.
+//   3. Re-export JSON serializers for programmatic banner inspection.
+
+import "render/banner_theme.oo";
+
+pub fn render_subsystem_version() -> String {
+    return "0.2.0";
+}

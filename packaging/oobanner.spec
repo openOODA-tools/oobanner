@@ -1,5 +1,5 @@
 Name:           oobanner
-Version:        0.1.0
+Version:        0.2.0
 Release:        1%{?dist}
 Summary:        Renders stylized ASCII art banners, typography, and logos in the terminal.
 License:        ASL 2.0
@@ -24,5 +24,5 @@ install -m 0755 %{SOURCE1} %{buildroot}/usr/bin/oobanner-uninstall
 /usr/bin/oobanner-uninstall
 
 %changelog
-* Wed Oct 07 2026 openOODA-tools <ops@openooda.org> - 0.1.0-1
-- Initial sovereign blueprint scaffolding
+* Wed Oct 07 2026 openOODA-tools <ops@openooda.org> - 0.2.0-1
+- Sovereign FIGLET and typography banner engine with streaming MCP server

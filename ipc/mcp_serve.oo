@@ -1,0 +1,100 @@
+// # Model Context Protocol (MCP) Stdio Server for oobanner
+//
+// Logline: JSON-RPC 2.0 stdio server providing stylized ASCII typography and banner rendering tools.
+//
+// Setup: Demands FsReadCap for stdio streaming. Operates without ambient authority.
+//
+// Beats:
+//   1. Ingest JSON-RPC 2.0 frames over stdin and dispatch RPC methods.
+//   2. Advertise banner rendering, font querying, and border style tools.
+//   3. Execute capability-bounded typography compositing and stream JSON responses.
+
+import "core/banner_engine.oo";
+import "render/banner_theme.oo";
+import "ipc/json_field.oo";
+
+pub fn run_mcp_server(fs: &FsReadCap) {
+    let mut running: Bool = true;
+    while running {
+        let line_res: Result[String, String] = oo_read_stdin_chunk(fs, 8192);
+        if !line_res.is_ok() {
+            running = false;
+        } else {
+            let line: String = match line_res { Ok(s) => s, Err(_) => "" };
+            let trimmed: String = str_trim(line);
+            if chars_len(trimmed) == 0 {
+                running = false;
+            } else {
+                let id: String = json_get_field(trimmed, "id");
+                let method: String = json_get_string(trimmed, "method");
+
+                if method == "initialize" {
+                    let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                        ",\"result\":{\"protocolVersion\":\"2024-11-05\"," +
+                        "\"serverInfo\":{\"name\":\"oobanner\",\"version\":\"0.2.0\"}," +
+                        "\"capabilities\":{\"tools\":{}}}}";
+                    println(resp);
+                } else if method == "notifications/initialized" {
+                    // Ack
+                } else if method == "tools/list" {
+                    let t1: String = "{\"name\":\"banner_render\",\"description\":\"Render text as stylized multi-line ASCII banner\"," +
+                        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"text\":{\"type\":\"string\"},\"font\":{\"type\":\"string\"},\"border\":{\"type\":\"string\"},\"align\":{\"type\":\"string\"}},\"required\":[\"text\"]}}";
+                    let t2: String = "{\"name\":\"banner_fonts\",\"description\":\"List available typography fonts and dimensions\"," +
+                        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}";
+                    let t3: String = "{\"name\":\"banner_borders\",\"description\":\"List supported decorative frames and borders\"," +
+                        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}";
+                    let t4: String = "{\"name\":\"banner_stats\",\"description\":\"Query typography engine specifications and glyph counts\"," +
+                        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}";
+                    let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                        ",\"result\":{\"tools\":[" + t1 + "," + t2 + "," + t3 + "," + t4 + "]}}";
+                    println(resp);
+                } else if method == "tools/call" {
+                    let params: String = json_get_field(trimmed, "params");
+                    let tool_name: String = json_get_string(params, "name");
+                    let args: String = json_get_field(params, "arguments");
+
+                    if tool_name == "banner_render" {
+                        let text_in: String = json_get_string(args, "text");
+                        let font_in: String = json_get_string(args, "font");
+                        let border_in: String = json_get_string(args, "border");
+                        let align_in: String = json_get_string(args, "align");
+
+                        let font: String = if chars_len(font_in) > 0 { font_in } else { "standard" };
+                        let border: String = if chars_len(border_in) > 0 { border_in } else { "none" };
+                        let alignment: String = if chars_len(align_in) > 0 { align_in } else { "left" };
+
+                        let lines: List[String] = render_banner_text(text_in, font, border, alignment);
+                        let j: String = render_banner_json(text_in, font, border, lines);
+                        let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                            ",\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"" + json_escape_string(j) + "\"}]}}";
+                        println(resp);
+                    } else if tool_name == "banner_fonts" {
+                        let j: String = "{\"fonts\":[{\"name\":\"standard\",\"height\":5,\"description\":\"Standard 5-line clean ASCII typography\"}," +
+                            "{\"name\":\"block\",\"height\":3,\"description\":\"Compact 3-line high-density block typography\"}]}";
+                        let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                            ",\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"" + json_escape_string(j) + "\"}]}}";
+                        println(resp);
+                    } else if tool_name == "banner_borders" {
+                        let j: String = "{\"borders\":[\"none\",\"single\",\"double\",\"star\",\"cyber\"]}";
+                        let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                            ",\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"" + json_escape_string(j) + "\"}]}}";
+                        println(resp);
+                    } else if tool_name == "banner_stats" {
+                        let j: String = "{\"engine\":\"oobanner\",\"version\":\"0.2.0\",\"fonts_count\":2,\"borders_count\":5,\"pure_native\":true}";
+                        let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                            ",\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"" + json_escape_string(j) + "\"}]}}";
+                        println(resp);
+                    } else {
+                        let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                            ",\"error\":{\"code\":-32601,\"message\":\"Method not found\"}}";
+                        println(resp);
+                    }
+                } else {
+                    let resp: String = "{\"jsonrpc\":\"2.0\",\"id\":" + id +
+                        ",\"error\":{\"code\":-32601,\"message\":\"Method not found\"}}";
+                    println(resp);
+                }
+            }
+        }
+    }
+}

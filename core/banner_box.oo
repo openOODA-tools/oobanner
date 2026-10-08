@@ -1,0 +1,112 @@
+// # oobanner Decorative Box and Frame Coordinator
+//
+// Logline: Applies stylized ASCII/Unicode frames, margins, and horizontal alignments to text blocks.
+//
+// Setup: Pure string matrix layout functions for terminal presentation.
+//
+// Beats:
+//   1. Measure maximum line widths across multi-line string lists.
+//   2. Pad and align lines according to left, center, or right alignments.
+//   3. Wrap text block in decorative borders (single, double, star, cyber, ascii).
+
+pub fn max_line_width(lines: List[String]) -> Int {
+    let count: Int = list_len(lines);
+    let mut max_w: Int = 0;
+    let mut i: Int = 0;
+    while i < count {
+        let l: String = list_get(lines, i);
+        let w: Int = chars_len(l);
+        if w > max_w {
+            max_w = w;
+        }
+        i = i + 1;
+    }
+    return max_w;
+}
+
+pub fn repeat_char(c: String, count: Int) -> String {
+    let mut s: String = "";
+    let mut i: Int = 0;
+    while i < count {
+        s = s + c;
+        i = i + 1;
+    }
+    return s;
+}
+
+pub fn align_line(s: String, target_w: Int, alignment: String) -> String {
+    let w: Int = chars_len(s);
+    if w >= target_w {
+        return s;
+    }
+    let diff: Int = target_w - w;
+    if alignment == "right" {
+        return repeat_char(" ", diff) + s;
+    }
+    if alignment == "center" {
+        let left: Int = diff / 2;
+        let right: Int = diff - left;
+        return repeat_char(" ", left) + s + repeat_char(" ", right);
+    }
+    // Default left
+    return s + repeat_char(" ", diff);
+}
+
+pub fn frame_banner_lines(lines: List[String], border: String, alignment: String, padding: Int) -> List[String] {
+    if border == "none" {
+        return lines;
+    }
+
+    let inner_w: Int = max_line_width(lines);
+    let content_w: Int = inner_w + (padding * 2);
+    let mut framed: List[String] = list_new();
+
+    let mut tl: String = "+";
+    let mut tr: String = "+";
+    let mut bl: String = "+";
+    let mut br: String = "+";
+    let mut hz: String = "-";
+    let mut vt: String = "|";
+
+    if border == "single" {
+        tl = "┌"; tr = "┐"; bl = "└"; br = "┘"; hz = "─"; vt = "│";
+    } else if border == "double" {
+        tl = "╔"; tr = "╗"; bl = "╚"; br = "╝"; hz = "═"; vt = "║";
+    } else if border == "star" {
+        tl = "*"; tr = "*"; bl = "*"; br = "*"; hz = "*"; vt = "*";
+    } else if border == "cyber" {
+        tl = "/"; tr = "\\"; bl = "\\"; br = "/"; hz = "═"; vt = "│";
+    }
+
+    let top_border: String = tl + repeat_char(hz, content_w + 2) + tr;
+    let bot_border: String = bl + repeat_char(hz, content_w + 2) + br;
+    let empty_row: String = vt + " " + repeat_char(" ", content_w) + " " + vt;
+
+    framed = list_push(framed, top_border);
+
+    let mut p: Int = 0;
+    while p < padding {
+        framed = list_push(framed, empty_row);
+        p = p + 1;
+    }
+
+    let count: Int = list_len(lines);
+    let mut i: Int = 0;
+    while i < count {
+        let raw_line: String = list_get(lines, i);
+        let aligned: String = align_line(raw_line, inner_w, alignment);
+        let line_with_pad: String = repeat_char(" ", padding) + aligned + repeat_char(" ", padding);
+        let row: String = vt + " " + line_with_pad + " " + vt;
+        framed = list_push(framed, row);
+        i = i + 1;
+    }
+
+    let mut q: Int = 0;
+    while q < padding {
+        framed = list_push(framed, empty_row);
+        q = q + 1;
+    }
+
+    framed = list_push(framed, bot_border);
+    return framed;
+}

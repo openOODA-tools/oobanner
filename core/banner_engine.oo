@@ -1,0 +1,89 @@
+// # oobanner Text Compositor and Banner Engine
+//
+// Logline: Converts text strings into composite multi-line typography banners.
+//
+// Setup: Demands pure string manipulation and font matrix lookups.
+//
+// Beats:
+//   1. Deconstruct input text into lines and discrete character units.
+//   2. Composite character rows horizontally according to chosen font height.
+//   3. Apply framing, borders, and dimensional alignment to output blocks.
+
+import "core/font_std_symbols.oo";
+import "core/font_block.oo";
+import "core/banner_box.oo";
+
+pub fn render_single_word_standard(word: String) -> List[String] {
+    let mut rows: List[String] = list_new();
+    let num_rows: Int = 5;
+    let n: Int = chars_len(word);
+
+    let mut r: Int = 0;
+    while r < num_rows {
+        let mut line: String = "";
+        let mut i: Int = 0;
+        while i < n {
+            let c: String = char_at(word, i);
+            let glyph_row: String = get_std_glyph_row(c, r);
+            line = line + glyph_row + " ";
+            i = i + 1;
+        }
+        rows = list_push(rows, line);
+        r = r + 1;
+    }
+    return rows;
+}
+
+pub fn render_single_word_block(word: String) -> List[String] {
+    let mut rows: List[String] = list_new();
+    let num_rows: Int = 3;
+    let n: Int = chars_len(word);
+
+    let mut r: Int = 0;
+    while r < num_rows {
+        let mut line: String = "";
+        let mut i: Int = 0;
+        while i < n {
+            let c: String = char_at(word, i);
+            let glyph_row: String = get_block_glyph_row(c, r);
+            line = line + glyph_row + " ";
+            i = i + 1;
+        }
+        rows = list_push(rows, line);
+        r = r + 1;
+    }
+    return rows;
+}
+
+pub fn render_banner_text(text: String, font: String, border: String, alignment: String) -> List[String] {
+    let trimmed: String = str_trim(text);
+    let mut lines: List[String] = list_new();
+
+    if chars_len(trimmed) == 0 {
+        lines = list_push(lines, " [EMPTY BANNER] ");
+        return frame_banner_lines(lines, border, alignment, 1);
+    }
+
+    let input_lines: List[String] = str_split(trimmed, "\n");
+    let count: Int = list_len(input_lines);
+    let mut i: Int = 0;
+
+    while i < count {
+        let segment: String = list_get(input_lines, i);
+        let block_lines: List[String] = if font == "block" {
+            render_single_word_block(segment)
+        } else {
+            render_single_word_standard(segment)
+        };
+
+        let block_len: Int = list_len(block_lines);
+        let mut j: Int = 0;
+        while j < block_len {
+            lines = list_push(lines, list_get(block_lines, j));
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+
+    return frame_banner_lines(lines, border, alignment, 1);
+}

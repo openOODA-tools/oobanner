@@ -1,52 +1,78 @@
-// # oobanner Main Entry Point
+// # oobanner Main Entry Point - Sovereign FIGLET & Typography Engine
 //
 // Logline: Renders stylized ASCII art banners, typography, and logos in the terminal.
 //
-// Setup: Demands explicit capability tokens and standard argument list.
+// Setup: Requires FsReadCap, ProcessCap, EnvCap. Operates with zero ambient authority.
 //
 // Beats:
-//   1. Parse command-line options and dispatch --help, --version, or --mcp.
-//   2. Execute capability-bounded oobanner operations.
-//   3. Format and output structured results to standard output.
+//   1. Dispatch --help, --version, and --mcp early without ambient side effects.
+//   2. Ingest input text from command arguments or standard input stream.
+//   3. Composite multi-line typography banners with customizable borders and color themes.
+
+import "core/banner_engine.oo";
+import "render/banner_theme.oo";
+import "ipc/banner_opts.oo";
+import "ipc/mcp_serve.oo";
 
 fn render_help() -> String {
-    return "oobanner 0.1.0 (openOODA sovereign theme & styling)\n"
-        + "usage: oobanner [options] [ARGUMENTS]...\n\n"
+    return "oobanner 0.2.0 (openOODA sovereign theme & styling)\n"
+        + "usage: oobanner [options] [TEXT]...\n\n"
         + "Renders stylized ASCII art banners, typography, and logos in the terminal.\n\n"
         + "Options:\n"
         + "  -h, --help           display this help and exit\n"
         + "  -v, --version        output version information and exit\n"
-        + "      --json           output formatted as JSON Lines\n"
-        + "      --color <WHEN>   colorize output: auto, always, never [default: auto]\n"
-        + "      --theme <NAME>   override active oote palette\n"
+        + "  -f, --font <FONT>    typography font: standard (5-line), block (3-line) [default: standard]\n"
+        + "  -b, --border <STYLE> decorative frame: none, single, double, star, cyber [default: none]\n"
+        + "  -a, --align <ALIGN>  text alignment: left, center, right [default: left]\n"
+        + "  -c, --color <COLOR>  ANSI color: cyan, green, yellow, magenta, red, blue [default: none]\n"
+        + "      --json           output formatted as structured JSON\n"
         + "      --mcp            run as Model Context Protocol stdio server\n";
 }
 
-fn render_version() -> String {
-    return "oobanner 0.1.0 (openOODA sovereign theme & styling)\n";
-}
+pub fn main(
+    fs: &FsReadCap,
+    proc_cap: &ProcessCap,
+    env: &EnvCap,
+    args: List[String]
+) -> Result[Int, String] {
+    let opts: BannerOpts = parse_banner_args(args);
 
-fn main(args: List[String]) -> Int {
-    let num_args: Int = list_len(args);
-    let mut i: Int = 0;
-
-    while i < num_args {
-        let arg: String = list_get(args, i);
-        if arg == "-h" || arg == "--help" {
-            print(render_help());
-            return 0;
-        }
-        if arg == "-v" || arg == "--version" {
-            print(render_version());
-            return 0;
-        }
-        if arg == "--mcp" {
-            print("{\"jsonrpc\":\"2.0\",\"result\":{\"status\":\"ready\",\"tool\":\"oobanner\"}}\n");
-            return 0;
-        }
-        i = i + 1;
+    if opts.action == "help" {
+        print(render_help());
+        return Ok(0);
+    }
+    if opts.action == "version" {
+        println("oobanner 0.2.0 (openOODA sovereign theme & styling)");
+        return Ok(0);
+    }
+    if opts.action == "mcp" {
+        run_mcp_server(fs);
+        return Ok(0);
     }
 
-    print("oobanner: sovereign capability-bounded utility ready\n");
-    return 0;
+    let mut render_text: String = opts.text;
+    if chars_len(render_text) == 0 {
+        let r: Result[String, String] = oo_read_stdin_chunk(fs, 65536);
+        if r.is_ok() {
+            let chunk: String = match r { Ok(s) => s, Err(_) => "" };
+            let trimmed: String = str_trim(chunk);
+            if chars_len(trimmed) > 0 {
+                render_text = trimmed;
+            }
+        }
+    }
+
+    if chars_len(render_text) == 0 {
+        render_text = "openOODA";
+    }
+
+    let lines: List[String] = render_banner_text(render_text, opts.font, opts.border, opts.alignment);
+
+    if opts.json_mode {
+        println(render_banner_json(render_text, opts.font, opts.border, lines));
+    } else {
+        print(render_banner_display(lines, opts.color));
+    }
+
+    return Ok(0);
 }

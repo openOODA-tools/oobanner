@@ -1,0 +1,189 @@
+// # oobanner Compact 3-Line Block Font
+//
+// Logline: Compact 3-line high-density glyphs for console headers and badge banners.
+//
+// Setup: Pure string matrix definitions for compact horizontal compositing.
+//
+// Beats:
+//   1. Map uppercase ASCII characters to 3-line block representations.
+//   2. Provide numeric digits and compact spacing.
+//   3. Dispatch row-by-row rendering for horizontal compositing.
+
+import "core/font_std_letters.oo";
+
+fn block_row_letters(c: String, row: Int) -> String {
+    if c == "A" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return "/_\\"; }
+        return "| |";
+    }
+    if c == "B" {
+        if row == 0 { return "|_)"; }
+        if row == 1 { return "|_)"; }
+        return "|_)";
+    }
+    if c == "C" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return "|  "; }
+        return " - ";
+    }
+    if c == "D" {
+        if row == 0 { return "|) "; }
+        if row == 1 { return "| |"; }
+        return "|) ";
+    }
+    if c == "E" {
+        if row == 0 { return "|- "; }
+        if row == 1 { return "|- "; }
+        return "|_ ";
+    }
+    if c == "F" {
+        if row == 0 { return "|- "; }
+        if row == 1 { return "|- "; }
+        return "|  ";
+    }
+    if c == "G" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return "| -"; }
+        return " -|";
+    }
+    if c == "H" {
+        if row == 0 { return "| |"; }
+        if row == 1 { return "|-|"; }
+        return "| |";
+    }
+    if c == "I" {
+        if row == 0 { return "[-]"; }
+        if row == 1 { return " | "; }
+        return "[-]";
+    }
+    if c == "J" {
+        if row == 0 { return " -|"; }
+        if row == 1 { return "  |"; }
+        return "\\_|";
+    }
+    if c == "K" {
+        if row == 0 { return "|/ "; }
+        if row == 1 { return "|< "; }
+        return "|\\ ";
+    }
+    if c == "L" {
+        if row == 0 { return "|  "; }
+        if row == 1 { return "|  "; }
+        return "|_ ";
+    }
+    if c == "M" {
+        if row == 0 { return "|\\/|"; }
+        if row == 1 { return "|  |"; }
+        return "|  |";
+    }
+    if c == "N" {
+        if row == 0 { return "|\\ |"; }
+        if row == 1 { return "| \\|"; }
+        return "|  |";
+    }
+    if c == "O" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return "| |"; }
+        return " - ";
+    }
+    if c == "P" {
+        if row == 0 { return "|_)"; }
+        if row == 1 { return "|  "; }
+        return "|  ";
+    }
+    return "";
+}
+
+fn block_row_tail(c: String, row: Int) -> String {
+    if c == "Q" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return "| |"; }
+        return " -\\";
+    }
+    if c == "R" {
+        if row == 0 { return "|_)"; }
+        if row == 1 { return "|\\ "; }
+        return "| \\";
+    }
+    if c == "S" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return " -_"; }
+        return " - ";
+    }
+    if c == "T" {
+        if row == 0 { return "---"; }
+        if row == 1 { return " | "; }
+        return " | ";
+    }
+    if c == "U" {
+        if row == 0 { return "| |"; }
+        if row == 1 { return "| |"; }
+        return " - ";
+    }
+    if c == "V" {
+        if row == 0 { return "\\ /"; }
+        if row == 1 { return "\\ /"; }
+        return " V ";
+    }
+    if c == "W" {
+        if row == 0 { return "|  |"; }
+        if row == 1 { return "|/\\|"; }
+        return "|/\\|";
+    }
+    if c == "X" {
+        if row == 0 { return "\\ /"; }
+        if row == 1 { return " X "; }
+        return "/ \\";
+    }
+    if c == "Y" {
+        if row == 0 { return "\\ /"; }
+        if row == 1 { return " Y "; }
+        return " | ";
+    }
+    if c == "Z" {
+        if row == 0 { return "---"; }
+        if row == 1 { return " / "; }
+        return "---";
+    }
+    if c == " " { return "  "; }
+    if c == "-" {
+        if row == 1 { return "--"; }
+        return "  ";
+    }
+    if c == ":" {
+        if row == 0 || row == 2 { return "·"; }
+        return " ";
+    }
+    if c == "!" {
+        if row == 0 { return "|"; }
+        if row == 1 { return "|"; }
+        return "·";
+    }
+    if c == "0" {
+        if row == 0 { return "[0]"; }
+        if row == 1 { return "| |"; }
+        return "[-]";
+    }
+    if c == "1" {
+        if row == 0 { return " 1 "; }
+        if row == 1 { return " | "; }
+        return "[-]";
+    }
+    if c == "2" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return " _|"; }
+        return "|_ ";
+    }
+    if row == 1 { return "·"; }
+    return " ";
+}
+
+pub fn get_block_glyph_row(ch: String, row: Int) -> String {
+    let u: String = to_upper_char(ch);
+    let r1: String = block_row_letters(u, row);
+    if chars_len(r1) > 0 {
+        return r1;
+    }
+    return block_row_tail(u, row);
+}

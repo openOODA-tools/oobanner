@@ -1,0 +1,131 @@
+// # oobanner Standard 5-Line Font Symbols and Dispatcher
+//
+// Logline: Multi-line typography glyphs for numbers, punctuation, and glyph routing.
+//
+// Setup: Pure string matrix definitions for horizontal character compositing.
+//
+// Beats:
+//   1. Define 5-line string matrices for digits 0 through 9.
+//   2. Define 5-line string matrices for punctuation and spacing.
+//   3. Dispatch glyph row lookup across letter and symbol subsystems.
+
+import "core/font_std_letters.oo";
+
+fn glyph_row_digits(c: String, row: Int) -> String {
+    if c == "0" {
+        if row == 0 { return "  ___  "; }
+        if row == 1 { return " / _ \\ "; }
+        if row == 2 { return "| | | |"; }
+        if row == 3 { return "| |_| |"; }
+        return " \\___/ ";
+    }
+    if c == "1" {
+        if row == 0 { return " _ "; }
+        if row == 1 { return "/ |"; }
+        if row == 2 { return "| |"; }
+        if row == 3 { return "|_|"; }
+        return "   ";
+    }
+    if c == "2" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "|_  )"; }
+        if row == 2 { return " / / "; }
+        if row == 3 { return "/___|"; }
+        return "     ";
+    }
+    if c == "3" {
+        if row == 0 { return " ____"; }
+        if row == 1 { return "|__ /"; }
+        if row == 2 { return " |_ \\"; }
+        if row == 3 { return "|___/"; }
+        return "     ";
+    }
+    if c == "4" {
+        if row == 0 { return " _ _  "; }
+        if row == 1 { return "| | | "; }
+        if row == 2 { return "|_  _|"; }
+        if row == 3 { return "  |_| "; }
+        return "      ";
+    }
+    if c == "5" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "| __|"; }
+        if row == 2 { return "|__ \\"; }
+        if row == 3 { return "|___/"; }
+        return "     ";
+    }
+    if c == "6" {
+        if row == 0 { return "  __ "; }
+        if row == 1 { return " / / "; }
+        if row == 2 { return "| _ \\"; }
+        if row == 3 { return "|___/"; }
+        return "     ";
+    }
+    if c == "7" {
+        if row == 0 { return " ____"; }
+        if row == 1 { return "|__  |"; }
+        if row == 2 { return "  / / "; }
+        if row == 3 { return " /_/  "; }
+        return "      ";
+    }
+    if c == "8" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "( _ )"; }
+        if row == 2 { return "/ _ \\"; }
+        if row == 3 { return "\\___/"; }
+        return "     ";
+    }
+    if c == "9" {
+        if row == 0 { return " ___ "; }
+        if row == 1 { return "/ _ \\"; }
+        if row == 2 { return "\\_, /"; }
+        if row == 3 { return " /_/ "; }
+        return "     ";
+    }
+    return "";
+}
+
+fn glyph_row_punct(c: String, row: Int) -> String {
+    if c == " " { return "   "; }
+    if c == "-" {
+        if row == 2 { return "----"; }
+        return "    ";
+    }
+    if c == ":" {
+        if row == 1 || row == 3 { return " o "; }
+        return "   ";
+    }
+    if c == "!" {
+        if row == 0 || row == 1 || row == 2 { return " | "; }
+        if row == 3 { return " o "; }
+        return "   ";
+    }
+    if c == "." {
+        if row == 3 { return " o "; }
+        return "   ";
+    }
+    if c == "/" {
+        if row == 0 { return "   /"; }
+        if row == 1 { return "  / "; }
+        if row == 2 { return " /  "; }
+        if row == 3 { return "/   "; }
+        return "    ";
+    }
+    if c == "=" {
+        if row == 1 || row == 2 { return "===="; }
+        return "    ";
+    }
+    if row == 2 { return " . "; }
+    return "   ";
+}
+
+pub fn get_std_glyph_row(ch: String, row: Int) -> String {
+    let u: String = to_upper_char(ch);
+    let r1: String = glyph_row_letters_am(u, row);
+    if chars_len(r1) > 0 { return r1; }
+    let r2: String = glyph_row_letters_nz(u, row);
+    if chars_len(r2) > 0 { return r2; }
+    let r3: String = glyph_row_digits(u, row);
+    if chars_len(r3) > 0 { return r3; }
+    return glyph_row_punct(u, row);
+}

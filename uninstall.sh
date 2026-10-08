@@ -4,7 +4,7 @@
 # "Removes oobanner binary, package installations, and cache."
 #
 # Usage:
-#   curl -fsSL https://openooda-toobanner.github.io/oobanner/uninstall.sh | bash
+#   curl -fsSL https://openooda-tools.github.io/oobanner/uninstall.sh | bash
 #   or: ./uninstall.sh [options]
 #
 # Options:
